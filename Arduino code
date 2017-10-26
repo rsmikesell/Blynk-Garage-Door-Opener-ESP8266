@@ -9,7 +9,7 @@
 #include <BlynkSimpleEsp8266.h>
 #include <Wire.h>
 #define REST      1000    //Rest Between Inhalations.
-char auth[] = "Your Blynk Auth Code Goes Here";
+char auth[] = 104ed31854614e7e96010914cd2dc1e0; //"Your Blynk Auth Code Goes Here"
 WidgetLCD lcd(V9);
 int buzzer = 5 ;// connect the I/O pin on the buzzer to this
 
@@ -131,7 +131,7 @@ void loop()
   Blynk.run();
   rssi=WiFi.RSSI();                                        // Functions to display RSSI and Ip address
   Serial.print(rssi);
- // lcd.print(0, 0, "Small Garage:)");
+ // lcd.print(0, 0, "Main Garage Door:)");
   String MyIp;
   MyIp =  "IP: " + String(WiFi.localIP()[]) + "." + String(WiFi.localIP()[1]) + "." + String(WiFi.localIP()[2]) + "." + String(WiFi.localIP()[3]);
   String MyWiFi;
