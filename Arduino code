@@ -1,0 +1,147 @@
+/*   ********************************************************************************************
+          Garage Door Opener  with Warning Light and Buzzer for Marantec
+          Author: Rich Plakas / Austin, TX - USA
+          Reviewed: July 21, 2016
+ *   ********************************************************************************************
+*/
+
+#include <ESP8266WiFi.h>
+#include <BlynkSimpleEsp8266.h>
+#include <Wire.h>
+#define REST      1000    //Rest Between Inhalations.
+char auth[] = "Your Blynk Auth Code Goes Here";
+WidgetLCD lcd(V9);
+int buzzer = 5 ;// connect the I/O pin on the buzzer to this
+
+long rssi;
+IPAddress ip;
+
+void setup()
+{
+  digitalWrite(13, HIGH); //GPIO13
+  pinMode(13, OUTPUT);       // Pin connected to the Relay
+  digitalWrite(5, HIGH); //GPIO5
+  pinMode(buzzer, OUTPUT);       // Pin connected to the Buzzer
+  Serial.begin(115200);
+  Blynk.begin(auth, "Your WifI Access Point Name", "Wifi AP Password");
+  lcd.clear();
+}
+
+// ---------[ Widget Button using  virtual pin # 7 ]--------------------
+
+BLYNK_WRITE(V7) 
+{
+  if (param.asInt() == ) 
+  {   
+   digitalWrite(13, HIGH); //GPIO13
+  } 
+  else 
+  {
+ //Beep Buzzer & Flash Lights
+  unsigned char i, j ;// define variables
+      for (i = ; i <12; i++)
+      {
+      digitalWrite (buzzer, LOW) ; // Turn buzzer ON
+      delay (300) ;// Delay 10ms
+      digitalWrite (buzzer, HIGH) ;// turn buzzer OFF
+      delay (75) ;// delay 10ms
+    }
+      for (i = ; i <15; i++)
+      {
+      digitalWrite(13, LOW); // GPIO13 Closes Relay
+      digitalWrite (buzzer, LOW) ; // Turn buzzer ON
+      delay (75) ;// Delay 10ms
+      digitalWrite(13, HIGH);
+      digitalWrite (buzzer, HIGH) ;// turn buzzer OFF
+      delay (150) ;// delay 10ms
+      }
+      delay(1500);
+      digitalWrite(13, LOW); //Close Relay
+      delay(750);
+      digitalWrite(13, HIGH);     
+      }
+}
+
+BLYNK_WRITE(V8)  //For testing Lights * Buzzer without Opening/Closing Garage Door
+{
+  if (param.asInt() == ) 
+  {   
+   digitalWrite(buzzer, HIGH); //GPIO13
+  } 
+  else 
+  {
+  //Beep Buzzer 
+  unsigned char i, j ;// define variables
+      for (i = ; i <12; i++)
+      {
+      digitalWrite (buzzer, LOW) ; // Turn buzzer ON
+      delay (300) ;// Delay 10ms
+      digitalWrite (buzzer, HIGH) ;// turn buzzer OFF
+      delay (75) ;// delay 10ms
+    }
+      for (i = ; i <15; i++)
+      {
+      digitalWrite(13, LOW); // GPIO13 Closes Relay
+      digitalWrite (buzzer, LOW) ; // Turn buzzer ON
+      delay (75) ;// Delay 10ms
+      digitalWrite(13, HIGH);
+      digitalWrite (buzzer, HIGH) ;// turn buzzer OFF
+      delay (150) ;// delay 10ms
+      
+    }
+  
+  delay(2000);
+  }  
+}
+
+/* BLYNK_WRITE(V9) //Button Widget is writing to pin V1
+ {
+  int pinData = param.asInt(); 
+  if(pinData==1)
+  {
+    lcd.clear();
+    lcd.print(0 ,0,"Wifi Strength");                  // This fn displays the Wifi strength when a button is pressed from the Blynk App
+    lcd.print(0 ,1,rssi);
+  }else
+  {
+    lcd.clear();
+  }
+  delay(500);
+  if(pinData==1)
+  {
+    lcd.clear();
+    lcd.print(0 ,0,"IP ADDRESS:");                 // This fn displays the IP Address when a button is pressed from the Blynk App
+    lcd.print(0 ,1,ip);
+   
+  }else
+  {
+    lcd.clear();
+  }
+  delay(500);
+ } 
+ }
+*/
+
+
+
+// ==============( Void Loop  ) ====================================
+
+void loop()
+{
+  Blynk.run();
+  rssi=WiFi.RSSI();                                        // Functions to display RSSI and Ip address
+  Serial.print(rssi);
+ // lcd.print(0, 0, "Small Garage:)");
+  String MyIp;
+  MyIp =  "IP: " + String(WiFi.localIP()[]) + "." + String(WiFi.localIP()[1]) + "." + String(WiFi.localIP()[2]) + "." + String(WiFi.localIP()[3]);
+  String MyWiFi;
+  MyWiFi = "WiFi: " + String(WiFi.RSSI());
+  // lcd.clear();
+    lcd.print( ,, MyWiFi);                  // This fn displays the Wifi strength when a button is pressed from the Blynk App
+    lcd.print( ,1, MyIp);
+//    delay(1000);
+    
+  
+  
+  yield();
+}
